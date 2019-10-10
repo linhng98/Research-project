@@ -1,0 +1,29 @@
+version: '3'
+services:
+  elasticsearch:
+    build: ./elastic-search
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    networks:
+      - elknet
+  kibana:
+    build: ./kibana
+    ports: 
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elknet
+  nginx:
+    build: ./nginx
+    ports: 
+      - "8080:8080"
+    depends_on:
+      - kibana
+    networks:
+      - elknet
+networks:
+  elknet:  

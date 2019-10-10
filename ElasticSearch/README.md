@@ -52,6 +52,11 @@
 - Elasticsearch [provides a comprehensive and powerful set of REST APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html) for performing tasks such as checking cluster health, performing CRUD (Create, Read, Update, and Delete) and search operations against indices, and executing advanced search operations such as filtering and aggregations.
 - Elasticsearch supports **34 text languages**, from Arabic to Thai, and provides analyzers for each. The full list can be found in [the Elasticsearch Language Analyzer documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html). Support for additional languages can be added with custom plugins. 
 ### 4. How it's work
+| RDBMS terminology | ElasticSearch Terminology |
+| ----------------- | ------------------------- |
+| database          | index                     |
+| table             | type                      |
+| row               | document                  |
 - **Inverted index**
   - We can compare an inverted index to an old library catalog card system. When you need some information/book in a library, you will use the card catalog, usually at the entrance of the library, to find the book.
   - Without the inverted index, the application has to go through each web page and check whether the word exists in the web page. Example:
@@ -114,6 +119,26 @@
 ![relation-ship](image/relationship-between-filebeat-and-logstash.png)
 ---
 ## Setup System Monitoring
+### Virtual machine (centos 7)
+#### ElasticSearch service
+- Run the following command to download and install the Elasticsearch public signing key
+``$ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch``
+- Next, add the Elastic repository at ``/etc/yum.repos.d/elasticsearch.repo``
+```
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsear
+ch
+enabled=1
+autorefresh=1
+type=rpm-md
+```
+#### Kibana service
+#### Beat service
+#### Nginx service
+### Deploy ElasticStack with Docker
 ---
 ## Demo
 ---
@@ -122,3 +147,5 @@
 - https://dzone.com/articles/what-is-elasticsearch-and-how-it-can-be-useful
 - https://www.elastic.co/what-is/elasticsearch
 - https://hub.packtpub.com/how-does-elasticsearch-work-tutorial/
+- https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-elastic-stack.html
+- https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elastic-stack-on-centos-7
