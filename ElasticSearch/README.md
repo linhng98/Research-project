@@ -14,7 +14,7 @@
   - [5. Logstash](#5-logstash)
 - [Setup system monitor](#setup-system-monitor)
   - [centos 7](#centos-7)
-  - [docker compose](#docker-compose)
+  - [Deploy using docker compose](#deploy-using-docker-compose)
 - [Demo](#demo)
 - [Reference](#reference)
 ---
@@ -133,19 +133,146 @@ $ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
 name=Elasticsearch repository for 7.x packages
 baseurl=https://artifacts.elastic.co/packages/7.x/yum
 gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsear
-ch
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
 enabled=1
 autorefresh=1
 type=rpm-md
 ```
-
+- Install elastic search with command
+```
+$ sudo yum -y install elasticsearch
+```
+- Elastic search configuration at file ``/etc/elasticsearch/elasticsearch.yml``
+- Start then enable service
+```
+$ sudo systemctl start elasticsearch
+```
+```
+$ sudo systemctl enable elasticsearch
+```
+- Elasticsearch is listening at port ``9200``, so if you want to verify that elastic search already running, use command
+```
+$ curl -X GET "localhost:9200"
+```
+- Output will similar like this
+```
+{
+  "name" : "localhost.localdomain",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "lzWtkhTyQhKblhfTDmtDjw",
+  "version" : {
+    "number" : "7.4.0",
+    "build_flavor" : "default",
+    "build_type" : "rpm",
+    "build_hash" : "22e1767283e61a198cb4db791ea66e3f11ab9910",
+    "build_date" : "2019-09-27T08:36:48.569419Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.2.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
 #### Kibana service
-#### Beat service
+- Install kibana
+```
+$ sudo yum -y install kibana
+```
+- Configure file at ``/etc/kibana/kibana.yml``
+- Start and enable service
+```
+$ sudo systemctl start kibana
+```
+```
+$ sudo systemctl enable kibana
+```
+- Because Kibana is configured to only listen on ``localhost``, we must set up a reverse proxy to allow external access to it. We will use ``Nginx`` for this purpose.
 #### Nginx service
-### Docker compose
+- Nginx will act like a reverse proxy, allow outside network can access kibana.
+- Install nginx
+```
+$ sudo yum -y install nginx
+```
+- Create file ``/etc/nginx/conf.d/kibana.conf``
+```
+server {
+    listen 8080;
+
+    location / {
+        proxy_pass http://kibana:5601;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+- Start and enable nginx
+```
+$ sudo systemctl start nginx
+```
+```
+$ sudo systemctl enable nginx
+```
+#### Beat service
+- We will use metricbeat service for this demo, collect metrics from your systems and services. From CPU to memory, Redis to NGINX, and much more, Metricbeat is a lightweight way to send system and service statistics.
+- Install metricbeat
+```
+$ sudo yum -y install metricbeat
+```
+- Ship system metric to elasticsearch
+```
+$ sudo metricbeat modules enable system
+```
+- Setup initial environment
+```
+$ sudo metricbeat setup -e
+```
+- Start and enable metricbeat service
+```
+$ sudo systemctl start metricbeat
+```
+```
+$ sudo systemctl enable metricbeat
+```
+###  Deploy using docker compose
+```
+version: '3'
+services:
+  elasticsearch:
+    build: ./elastic-search
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    networks:
+      - elknet
+  kibana:
+    build: ./kibana
+    ports: 
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elknet
+  nginx:
+    build: ./nginx
+    ports: 
+      - "8080:8080"
+    depends_on:
+      - kibana
+    networks:
+      - elknet
+networks:
+  elknet:  
+```
 ---
 ## Demo
+- Connect to kibana at port ``8080``
+![demo-kibana](image/demo-kibana.png)
 ---
 ## Reference
 - https://towardsdatascience.com/an-overview-on-elasticsearch-and-its-usage-e26df1d1d24a
