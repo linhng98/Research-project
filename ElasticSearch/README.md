@@ -13,6 +13,8 @@
   - [4. Beats](#4-beats)
   - [5. Logstash](#5-logstash)
 - [Setup system monitor](#setup-system-monitor)
+  - [centos 7](#centos-7)
+  - [docker compose](#docker-compose)
 - [Demo](#demo)
 - [Reference](#reference)
 ---
@@ -119,11 +121,11 @@
 ![relation-ship](image/relationship-between-filebeat-and-logstash.png)
 ---
 ## Setup System Monitoring
-### Virtual machine (centos 7)
+### Centos 7
 #### ElasticSearch service
-- Run the following command to download and install the Elasticsearch public signing key
+- Run the following command to download and install the Elasticsearch public signing key.
 ``$ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch``
-- Next, add the Elastic repository at ``/etc/yum.repos.d/elasticsearch.repo``
+- Next, add the Elastic repository at ``/etc/yum.repos.d/elasticsearch.repo``.
 ```
 [elasticsearch-7.x]
 name=Elasticsearch repository for 7.x packages
@@ -135,10 +137,11 @@ enabled=1
 autorefresh=1
 type=rpm-md
 ```
+
 #### Kibana service
 #### Beat service
 #### Nginx service
-### Deploy ElasticStack with Docker
+### Docker compose
 ---
 ## Demo
 ---
