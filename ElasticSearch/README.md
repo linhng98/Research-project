@@ -124,8 +124,10 @@
 ### Centos 7
 #### ElasticSearch service
 - Run the following command to download and install the Elasticsearch public signing key.
-```$ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch```
-- Next, add the Elastic repository at ```/etc/yum.repos.d/elasticsearch.repo```.
+```
+$ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+```
+- Next, add the Elastic repository at ``/etc/yum.repos.d/elasticsearch.repo``.
 ```
 [elasticsearch-7.x]
 name=Elasticsearch repository for 7.x packages
